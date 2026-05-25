@@ -2716,36 +2716,139 @@ async function buildPDF(){
     return pdf;
 }
 
-async function downloadPDF(){
-    const pdf = await buildPDF();
     
-    const boardingVal = document.getElementById('boardingParkingTitle').value.trim();
-    const dropVal = document.getElementById('dropParkingTitle').value.trim();
-    const p1Name = document.getElementById('name_p1').value.trim();
+    
+    async function downloadPDF(){
 
-    const bLetter = boardingVal ? boardingVal.charAt(0).toUpperCase() : "X";
-    const dLetter = dropVal ? dropVal.charAt(0).toUpperCase() : "X";
-    const travelRoute = `${bLetter}To${dLetter}`;
+    const pdf = await buildPDF();
 
-    let p1FirstWord = "NoPassenger";
-    if (p1Name !== "") {
-        p1FirstWord = p1Name.split(' ')[0];
+
+
+    // =========================
+    // ROUTE DETAILS
+    // =========================
+
+    const boardingVal =
+        document.getElementById('startPlace')
+        .value.trim();
+
+    const dropVal =
+        document.getElementById('endPlace')
+        .value.trim();
+
+
+
+    // =========================
+    // PASSENGER DETAILS
+    // =========================
+
+    const p1 =
+        document.getElementById('name_p1')
+        .value.trim();
+
+    const p2 =
+        document.getElementById('name_p2')
+        .value.trim();
+
+
+
+    // =========================
+    // PASSENGER NAME SYSTEM
+    // =========================
+
+    let passengerName = "NoPassenger";
+
+    // FIRST PRIORITY = P1
+    if(p1 !== ""){
+
+        passengerName =
+            p1.split(' ')[0];
     }
 
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    // SECOND PRIORITY = P2
+    else if(p2 !== ""){
 
-    const currentDateTimeString = `${day}.${month}.${year}_${hours}.${minutes}.${seconds}`;
-    const safeP1 = p1FirstWord.replace(/[^a-zA-Z0-9]/g, "_");
-    const pdfFileName = `Bus Ticket_${travelRoute}_${safeP1}_${currentDateTimeString}.pdf`;
+        passengerName =
+            p2.split(' ')[0];
+    }
+
+
+
+    // =========================
+    // SAFE TEXT
+    // =========================
+
+    const safeBoarding =
+        (boardingVal || "Departure")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
+        .trim();
+
+    const safeDrop =
+        (dropVal || "Arrival")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
+        .trim();
+
+    const safePassenger =
+        passengerName
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .trim();
+
+
+
+    // =========================
+    // DATE & TIME
+    // =========================
+
+    const now = new Date();
+
+    const day =
+        String(now.getDate()).padStart(2,'0');
+
+    const month =
+        String(now.getMonth() + 1).padStart(2,'0');
+
+    const year =
+        now.getFullYear();
+
+    const hours =
+        String(now.getHours()).padStart(2,'0');
+
+    const minutes =
+        String(now.getMinutes()).padStart(2,'0');
+
+    const seconds =
+        String(now.getSeconds()).padStart(2,'0');
+
+
+
+    // =========================
+    // FORMAT
+    // =========================
+
+    const datePart =
+        `${day}${month}${year}`;
+
+    const timePart =
+        `${hours}${minutes}${seconds}`;
+
+
+
+    // =========================
+    // FINAL FILE NAME
+    // =========================
+
+    const pdfFileName =
+`Bus Ticket_${safeBoarding} To ${safeDrop}_${safePassenger}_${datePart}_${timePart}.pdf`;
+
+
+
+    // =========================
+    // DOWNLOAD PDF
+    // =========================
 
     pdf.save(pdfFileName);
 }
+    
 </script>
 
 </body>
